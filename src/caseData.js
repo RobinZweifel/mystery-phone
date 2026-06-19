@@ -1,5 +1,6 @@
 import {
   Banknote,
+  BookOpen,
   CalendarDays,
   Camera,
   Compass,
@@ -44,6 +45,12 @@ export const CASE = {
 };
 
 export const APPS = [
+  {
+    id: "library",
+    label: "Library",
+    icon: BookOpen,
+    tone: "amber"
+  },
   {
     id: "messages",
     label: "Messages",
@@ -109,6 +116,79 @@ export const APPS = [
     label: "Case",
     icon: ShieldQuestion,
     tone: "violet"
+  }
+];
+
+export const CASE_LIBRARY = [
+  {
+    id: "last-platform",
+    title: "The Last Platform",
+    owner: "Lena Ortiz",
+    status: "Playable",
+    difficulty: "Beginner",
+    difficultyLevel: 2,
+    solvedBy: 1842,
+    time: "25-35 min",
+    genre: "Detective thriller",
+    hook: "A missing friend's phone points to a red scarf, a hidden platform meeting, and a train that left before help arrived.",
+    mechanics: ["Timeline rebuild", "Hidden album code", "Sender identification"],
+    inspiration: "Found-phone structure with cross-app password inference and final-step reconstruction."
+  },
+  {
+    id: "dead-air",
+    title: "Dead Air at 03:17",
+    owner: "Mira Voss",
+    status: "Case concept",
+    difficulty: "Intermediate",
+    difficultyLevel: 3,
+    solvedBy: 927,
+    time: "35-45 min",
+    genre: "Analog horror",
+    hook: "A campus radio host disappears after recording number-station bursts that begin predicting her own movements.",
+    mechanics: ["Audio transcript cipher", "Frequency log", "Scheduled notification"],
+    inspiration: "Numbers-station mystery adapted into voicemail, radio logs, and timestamp puzzles."
+  },
+  {
+    id: "hitchhiker",
+    title: "Passenger Zero",
+    owner: "Timo Keller",
+    status: "Case concept",
+    difficulty: "Intermediate",
+    difficultyLevel: 3,
+    solvedBy: 1311,
+    time: "30-40 min",
+    genre: "Urban legend",
+    hook: "A rideshare driver keeps accepting the same passenger request, but every trip ends at an address that burned down years ago.",
+    mechanics: ["Ride receipts", "Address matching", "Photo anomaly review"],
+    inspiration: "Vanishing-hitchhiker folklore reframed through rideshare logs and GPS breadcrumbs."
+  },
+  {
+    id: "watchers",
+    title: "The Ridge Watchers",
+    owner: "Ana Roig",
+    status: "Case concept",
+    difficulty: "Hard",
+    difficultyLevel: 4,
+    solvedBy: 604,
+    time: "45-60 min",
+    genre: "Folk horror",
+    hook: "A hiker's phone returns from the ridge with dusk photos of tall silhouettes that move only when the camera metadata is sorted.",
+    mechanics: ["EXIF sorting", "Compass bearings", "Weather-window logic"],
+    inspiration: "Mountain watcher folklore turned into metadata and route-orientation deduction."
+  },
+  {
+    id: "liminal-mall",
+    title: "Exit Past Closing",
+    owner: "Jules Marin",
+    status: "Case concept",
+    difficulty: "Expert",
+    difficultyLevel: 5,
+    solvedBy: 218,
+    time: "60+ min",
+    genre: "Liminal horror",
+    hook: "A night cleaner vanishes inside a dead mall whose floor map keeps adding service corridors that were never built.",
+    mechanics: ["Map-layer comparison", "Camera loop mismatch", "Maintenance-code puzzle"],
+    inspiration: "Liminal-space horror adapted into floor plans, camera stills, and impossible navigation."
   }
 ];
 

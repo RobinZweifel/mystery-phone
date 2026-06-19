@@ -22,6 +22,7 @@ import {
   APPS,
   CALENDAR,
   CASE,
+  CASE_LIBRARY,
   CLUES,
   CONTACTS,
   DEDUCTIONS,
@@ -129,6 +130,27 @@ function LandingPage({ onPlay }) {
             <h3>Make The Case</h3>
             <p>Rebuild the final timeline, test theories against evidence, and submit the final deduction.</p>
           </article>
+        </div>
+      </section>
+
+      <section className="landing-section case-library-preview">
+        <h2>Case Library</h2>
+        <div className="case-library-grid">
+          {CASE_LIBRARY.map((item) => (
+            <article className="library-card" key={item.id}>
+              <div className="library-card-top">
+                <span>{item.status}</span>
+                <b>{"●".repeat(item.difficultyLevel)}</b>
+              </div>
+              <h3>{item.title}</h3>
+              <p>{item.hook}</p>
+              <div className="library-meta">
+                <span>{item.difficulty}</span>
+                <span>{item.solvedBy.toLocaleString()} solved</span>
+                <span>{item.time}</span>
+              </div>
+            </article>
+          ))}
         </div>
       </section>
     </main>
@@ -383,6 +405,7 @@ function PhoneScreen(props) {
 }
 
 function HomeScreen({ openApp, clues, puzzles }) {
+  const leads = getActiveLeads(puzzles, clues);
   return (
     <div className="home-screen">
       <div className="home-top">
@@ -391,6 +414,18 @@ function HomeScreen({ openApp, clues, puzzles }) {
           <p className="mission">{Object.keys(puzzles).length} puzzles solved · {clues.size} evidence items</p>
         </div>
       </div>
+      <section className="phone-alerts">
+        <div className="phone-alerts-title">
+          <span>Active leads</span>
+          <button type="button" onClick={() => openApp("library")}>Library</button>
+        </div>
+        {leads.map((lead) => (
+          <button type="button" className="phone-alert" key={lead.title} onClick={() => openApp(lead.app)}>
+            <strong>{lead.title}</strong>
+            <span>{lead.detail}</span>
+          </button>
+        ))}
+      </section>
       <div className="app-grid">
         {APPS.map((app) => {
           const Icon = app.icon;
@@ -436,6 +471,7 @@ function AppWindow(props) {
       </div>
       <div className="app-content">
         {activeApp === "messages" && <Messages {...props} />}
+        {activeApp === "library" && <CaseLibraryApp openApp={props.openApp} />}
         {activeApp === "photos" && <Photos {...props} />}
         {activeApp === "notes" && <Notes {...props} />}
         {activeApp === "calendar" && <Calendar {...props} />}
@@ -447,6 +483,78 @@ function AppWindow(props) {
         {activeApp === "settings" && <SettingsApp />}
         {activeApp === "case" && <CaseApp {...props} />}
       </div>
+    </div>
+  );
+}
+
+function getActiveLeads(puzzles, clues) {
+  if (!puzzles.sender) {
+    return [
+      { app: "messages", title: "Unknown sender", detail: "Find who N. is before trusting the Platform 6 message." },
+      { app: "contacts", title: "Contact cross-check", detail: "One saved contact explains the hidden initial." }
+    ];
+  }
+  if (!puzzles.panicNote) {
+    return [
+      { app: "notes", title: "Locked note", detail: "The recovery answer is hidden in a conversation." },
+      { app: "messages", title: "Trust conflict", detail: "Rowan's thread explains why Lena changed plans." }
+    ];
+  }
+  if (!puzzles.hiddenAlbum) {
+    return [
+      { app: "photos", title: "Recently Deleted", detail: "Combine locker and platform numbers to open the album." },
+      { app: "calendar", title: "Hidden meeting", detail: "Decode the private appointment before finalizing the route." }
+    ];
+  }
+  if (!puzzles.route || !puzzles.timeline) {
+    return [
+      { app: "maps", title: "Route reconstruction", detail: "Put Lena's last stops in timestamp order." },
+      { app: "case", title: "Timeline board", detail: `${clues.size} evidence items logged. Test the order before accusing anyone.` }
+    ];
+  }
+  return [
+    { app: "case", title: "Ready for deduction", detail: "The contradictions are on the board. Choose what happened." }
+  ];
+}
+
+function CaseLibraryApp({ openApp }) {
+  return (
+    <div className="library-app">
+      <div className="library-intro">
+        <span>Case archive</span>
+        <strong>{CASE_LIBRARY.length} investigations</strong>
+        <p>Pick a case, compare difficulty, and preview the investigation gimmicks before playing.</p>
+      </div>
+      {CASE_LIBRARY.map((item) => (
+        <article className="library-card phone-card" key={item.id}>
+          <div className="library-card-top">
+            <span>{item.status}</span>
+            <b>{"●".repeat(item.difficultyLevel)}</b>
+          </div>
+          <h3>{item.title}</h3>
+          <p>{item.hook}</p>
+          <div className="library-meta">
+            <span>{item.difficulty}</span>
+            <span>{item.solvedBy.toLocaleString()} solved</span>
+            <span>{item.time}</span>
+          </div>
+          <div className="mechanic-tags">
+            {item.mechanics.map((mechanic) => (
+              <span key={mechanic}>{mechanic}</span>
+            ))}
+          </div>
+          <p className="inspiration-note">{item.inspiration}</p>
+          {item.status === "Playable" ? (
+            <button type="button" className="full-button" onClick={() => openApp("case")}>
+              Open case board
+            </button>
+          ) : (
+            <button type="button" className="full-button muted" disabled>
+              Prototype case
+            </button>
+          )}
+        </article>
+      ))}
     </div>
   );
 }
@@ -590,6 +698,13 @@ function Photos({ solvePuzzle, miss, clues, puzzles }) {
                 <strong>{locked ? "Recently Deleted" : photo.title}</strong>
                 <span>{photo.time}</span>
                 <p>{locked ? "Locked image. The thumbnail shows station lights and a red shape." : photo.caption}</p>
+                {photo.id === "photo-scarf" && hiddenUnlocked && (
+                  <div className="metadata-strip">
+                    <span>EXIF 22:04</span>
+                    <span>GPS: Platform 6</span>
+                    <span>Flash off</span>
+                  </div>
+                )}
                 {photo.id === "photo-scarf" && <EvidencePill found={clues.has("photo-scarf")} />}
               </div>
             </article>
@@ -921,6 +1036,63 @@ function CaseInstruction({ compact = false }) {
   );
 }
 
+function TheoryLab({ clues }) {
+  const [theory, setTheory] = useState("rowan");
+  const theories = {
+    rowan: {
+      label: "Rowan took Lena",
+      support: clues.has("note-locker") ? "Lena did not trust Rowan with the spare key." : "A locked note may explain Rowan's role.",
+      contradiction:
+        clues.has("maps-platform") && clues.has("bank-atm")
+          ? "The route and ATM timestamp place Lena alone at Riverton Central after Rowan's last known contact."
+          : "Needs route and wallet evidence before this can be tested."
+    },
+    noah: {
+      label: "Noah lured Lena",
+      support: clues.has("message-unknown") ? "Noah matches N. and the anonymous Platform 6 message." : "Identify N. before testing this theory.",
+      contradiction:
+        clues.has("browser-train") && clues.has("photo-scarf")
+          ? "The train and scarf evidence suggest a planned exchange, not a random abduction."
+          : "Needs photo and train evidence."
+    },
+    runaway: {
+      label: "Lena left voluntarily",
+      support:
+        clues.has("browser-train") && clues.has("bank-atm")
+          ? "She searched the train, withdrew cash, and disabled location sharing."
+          : "Needs browser and wallet evidence.",
+      contradiction:
+        clues.has("message-unknown")
+          ? "The threats and 'no police' instruction mean the departure was pressured, not carefree."
+          : "Needs the anonymous thread."
+    }
+  };
+  const active = theories[theory];
+
+  return (
+    <section className="theory-lab">
+      <div className="puzzle-title">
+        <Eye size={17} />
+        <strong>Theory lab</strong>
+        <span />
+      </div>
+      <div className="choice-grid">
+        {Object.entries(theories).map(([id, item]) => (
+          <button type="button" className={cx(theory === id && "selected")} key={id} onClick={() => setTheory(id)}>
+            {item.label}
+          </button>
+        ))}
+      </div>
+      <div className="theory-result">
+        <span>Supports</span>
+        <p>{active.support}</p>
+        <span>Contradiction</span>
+        <p>{active.contradiction}</p>
+      </div>
+    </section>
+  );
+}
+
 function CaseApp({ clues, puzzles, score, requiredFound, solvePuzzle, miss, chooseDeduction, deduction, solved }) {
   const [timeline, setTimeline] = useState([]);
   const evidenceOptions = CASE.timelineOptions;
@@ -966,6 +1138,8 @@ function CaseApp({ clues, puzzles, score, requiredFound, solvePuzzle, miss, choo
           Check timeline
         </button>
       </PuzzleCard>
+
+      <TheoryLab clues={clues} />
 
       {solved ? (
         <div className="verdict success">
